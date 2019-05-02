@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 #   Grabbing the entire data set
-data_set =  pd.read_csv('events.csv')
+data_set =  pd.read_csv('data/events.csv')
 print(data_set.head())
 
 #   Getting the latest timestamp, which we'll use to 
