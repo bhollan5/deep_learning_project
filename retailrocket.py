@@ -29,7 +29,7 @@ def generate_dataset(filename, output_filename):
     _hfd5_from_dataframe(data, output_filename)
 
 
-def _read_dataframe(filename):
+def _read_dataframe(filename, training=True):
     """Reads the original dataset CSV as a pandas dataframe"""
     # delay importing this to avoid another dependency
     import pandas
@@ -38,9 +38,22 @@ def _read_dataframe(filename):
     # get a model based off the input params
     start = time.time()
     log.debug(f'reading data from {filename}')
-    data = pandas.read_csv(filename, names=['user', 'event', 'item'], header=0, usecols=[1, 2, 3], na_filter=False)
+    data = pandas.read_csv(filename, names=['time', 'user', 'event', 'item'], header=0, 
+                                    usecols=[0, 1, 2, 3], na_filter=False)
 
-    # TODO: remove testing data
+
+    #   Removing testing data
+    latest_time = data['time'].max()
+    #   Constant defining milliseconds in a day
+    MILLISECOND_DAY = 86400000
+    #   Figuring out the cutoff between training and test  data:
+    time_cutoff = latest_time - MILLISECOND_DAY
+
+    #   Separating the data into  testing data vs training data:
+    if (training):
+        data = data[data['time'] < time_cutoff]
+    else:   # To get the test data:
+        data = data[data['time'] > time_cutoff]
 
     # replace events with weights
     data['event'] = data['event'].replace({'view': 1.0, 'addtocart': 1.0, 'transaction': 1.0})
@@ -51,7 +64,6 @@ def _read_dataframe(filename):
 
     # store as a CSR matrix
     log.debug(f'read data file in {time.time() - start:0.2f}s')
-
     return data
 
 
