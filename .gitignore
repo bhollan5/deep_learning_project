@@ -126,4 +126,4 @@ dmypy.json
 .idea/workspace.xml
 
 # Data
-data/recommendations.csv
+data/recommendations*.csv
