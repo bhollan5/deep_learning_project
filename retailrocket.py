@@ -38,22 +38,26 @@ def _read_dataframe(filename, training=True):
     # get a model based off the input params
     start = time.time()
     log.debug(f'reading data from {filename}')
-    data = pandas.read_csv(filename, names=['time', 'user', 'event', 'item'], header=0, 
-                                    usecols=[0, 1, 2, 3], na_filter=False)
+    data = pandas.read_csv(filename, names=['time', 'user', 'event', 'item'], header=0, usecols=[0, 1, 2, 3],
+                           na_filter=False)
 
-
-    #   Removing testing data
+    # Removing testing data
     latest_time = data['time'].max()
-    #   Constant defining milliseconds in a day
-    MILLISECOND_DAY = 86400000
-    #   Figuring out the cutoff between training and test  data:
+    # Constant defining milliseconds in a day
+    MILLISECOND_DAY = 86_400_000
+    # Figuring out the cutoff between training and test  data:
     time_cutoff = latest_time - MILLISECOND_DAY
 
-    #   Separating the data into  testing data vs training data:
-    if (training):
+    # Separating the data into  testing data vs training data:
+    if training:
         data = data[data['time'] < time_cutoff]
-    else:   # To get the test data:
-        data = data[data['time'] > time_cutoff]
+    else:  # To get the test data:
+        data = data[data['time'] >= time_cutoff]
+
+    # remove users with less than 20 records
+    value_counts = data['user'].value_counts()
+    to_remove = value_counts[value_counts <= 20]
+    data = data[~data.user.isin(to_remove)]
 
     # replace events with weights
     data['event'] = data['event'].replace({'view': 1.0, 'addtocart': 1.0, 'transaction': 1.0})
