@@ -23,7 +23,7 @@ def calculate_recommendations(output_filename):
     items, users, events = get_retailrocket_ecommerce()
 
     # create a model from the input data
-    model = AlternatingLeastSquares(factors=100, dtype=np.float32)
+    model = AlternatingLeastSquares(factors=32, dtype=np.float32)
 
     # lets weight these models by bm25weight.
     logging.debug('weighting matrix by bm25_weight')
