@@ -47,7 +47,7 @@ def calculate_recommendations(output_filename):
     with tqdm.tqdm(total=len(users)) as progress:
         with codecs.open(output_filename, 'w', 'utf8') as o:
             for user_id, username in enumerate(users):
-                for item_id, score in model.recommend(user_id, user_events):
+                for item_id, score in model.recommend(user_id, user_events, N=100):
                     o.write(f'{username},{items[item_id]},{score}\n')
                 progress.update(1)
 
